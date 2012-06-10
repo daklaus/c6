@@ -54,101 +54,63 @@ import javax.crypto.KeyAgreement;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.DHParameterSpec;
 
-public class DHRougueServer
-{
-	static int serverPort;
-	static String hostname;
-	static long sourceAccountNumber;
-	static long destAccountNumber;
-	static int amount;
-	
-	
-	public static void usage()
-	{
-		System.err.println("Usage: java SampleClient <host> <port> <source account number> <destination account number> <amount>");
+public class DHRougueServer {
+
+	public static void usage() {
+		System.err
+				.println("Usage: java DHRogueServer <listen-port> <server> <server-port> <dest-account-number> <amount>");
 		System.exit(1);
 	}
-	
-	public static void main (String args[])
-	{
-		Socket s = null;
-		String ack;
-		
+
+	public static void main(String args[]) {
+		int serverPort;
+		int listenPort;
+		String server;
+		long destAccountNumber;
+		int amount;
+
 		if (args.length != 5)
 			usage();
-		
-		hostname = args[0];
-		serverPort = Integer.parseInt(args[1]);
-		sourceAccountNumber = Long.parseLong(args[2]);
+
+		listenPort = Integer.parseInt(args[0]);
+		server = args[1];
+		serverPort = Integer.parseInt(args[2]);
 		destAccountNumber = Long.parseLong(args[3]);
-		amount=Integer.parseInt(args[4]);
+		amount = Integer.parseInt(args[4]);
 		
-		
-		try
-		{
-			s = new Socket(hostname, serverPort);
-			DataInputStream in = new DataInputStream(s.getInputStream());
-			DataOutputStream out = new DataOutputStream(s.getOutputStream());
-			
-			// receive the ehlo from the server
-
-			// reply with your inetsec credentials and immatriculation number
-			
-			// check if the server replied with "OK"
-			
-			// get DH params from server
-			
-			// generate your public key using the DH params
-    		
-			// get server's public key
-    		
-			// send your public key to the server
-
-			// again, check for an "OK" by the server
-    		
-			// calculate shared encryption key
-
-			// construct a message
-			Object[] messageArgs = {
-					new String("Destination Acc.no.:"), new Long(destAccountNumber),
-					new String("Source Acc.no.     :"), new Long(sourceAccountNumber),
-					new String("Amount (in US$)    :"), new Long(amount)
-				};
-
-			String message = MessageFormat.format(
-				"---------- secure banking wire transfer message ----------\n" +
-				"{0} {1,number,000000000000000}\n" +
-				"{2} {3,number,000000000000000}\n" +
-				"{4} {5,number,000000000000000}\n" +
-				"------------------ end of wire transfer ------------------\n",
-				messageArgs);
-    		
-			System.out.println("plaintext message: \n" + message + "\n");
-
-
-			// encrypt message with shared secret
-
-			// send encrypted message
-		}
-		catch (Exception e)
-		{
-			// handle exceptions
-		}
-		finally
-		{
-			// close connection
-			if(s!=null)
-			{
-				try
-				{
-						s.close();
-				}
-				catch (IOException e)
-				{
-					System.out.println("close:"+e.getMessage());
-				}
-			}
-		}
+		server(listenPort, server, serverPort, destAccountNumber, amount);
 	}
-}
 
+	private static void server(int listenPort, String server, int serverPort,
+			long destAccountNumber, int amount) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+
+	
+	// Returns a comma-separated string of 3 values.
+	// The first number is the prime modulus P.
+	// The second number is the base generator G.
+	// The third number is bit size of the random exponent L.
+	private static String genDhParams(int bitLength) {
+	    try {
+	        // Create the parameter generator for a 1024-bit DH key pair
+	        AlgorithmParameterGenerator paramGen = AlgorithmParameterGenerator.getInstance("DH");
+	        paramGen.init(bitLength);
+
+	        // Generate the parameters
+	        AlgorithmParameters params = paramGen.generateParameters();
+	        DHParameterSpec dhSpec
+	            = (DHParameterSpec)params.getParameterSpec(DHParameterSpec.class);
+
+	        // Return the three values in a string
+	        return ""+dhSpec.getP()+","+dhSpec.getG()+","+dhSpec.getL();
+	    } catch (NoSuchAlgorithmException e) {
+	    } catch (InvalidParameterSpecException e) {
+	    }
+	    return null;
+	}
+	
+	
+}
