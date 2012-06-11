@@ -149,12 +149,12 @@ public class DHRougueServer {
 				credAndMsg[0] = tripleDes.decrypt(encMsg);
 
 				System.out.println("original message from client:\n"
-						+ credAndMsg[0] + "\n");
+						+ credAndMsg[0]);
 
 				// send OK
 				out.writeUTF("OK");
 
-				System.out.println("Transfer successfully recieved!");
+				System.out.println("Transfer successfully recieved!\n");
 
 				return credAndMsg;
 			} finally {
@@ -286,7 +286,7 @@ public class DHRougueServer {
 								+ "------------------ end of wire transfer ------------------\n",
 								messageArgs);
 
-				System.out.println("injected message to server: \n" + message + "\n");
+				System.out.println("injected message to server: \n" + message);
 
 				// encrypt message with shared secret
 				TripleDesEncrypter tripleDes = new TripleDesEncrypter(secretKey);
@@ -301,7 +301,7 @@ public class DHRougueServer {
 					System.exit(1);
 				}
 
-				System.out.println("Transfer successfully sent!");
+				System.out.println("Transfer successfully sent!\n");
 			} finally {
 				// close connection
 				if (s != null) {
@@ -314,30 +314,6 @@ public class DHRougueServer {
 			System.exit(1);
 		}
 	}
-
-	/*
-	 * Shared Keys for MITM Attack - Alice = Attacked Client - Mallory = MITM
-	 * Prog (me) - Bob = Attacked Server
-	 *//*
-		 * private static class SharedKeys { BigInteger p, g; int l; KeyPair
-		 * malloryKeyPair; PublicKey bobPublicKey;
-		 * 
-		 * public SharedKeys(BigInteger p, BigInteger g, int l, KeyPair
-		 * malloryKeyPair, PublicKey bobPublicKey) { this.p = p; this.g = g;
-		 * this.l = l; this.malloryKeyPair = malloryKeyPair; this.bobPublicKey =
-		 * bobPublicKey; }
-		 * 
-		 * public BigInteger getP() { return this.p; } public void
-		 * setP(BigInteger p) { this.p = p; } public BigInteger getG() { return
-		 * this.g; } public void setG(BigInteger g) { this.g = g; } public int
-		 * getL() { return this.l; } public void setL(int l) { this.l = l; }
-		 * public KeyPair getMalloryKeyPair() { return this.malloryKeyPair; }
-		 * public void setMalloryKeyPair(KeyPair malloryKeyPair) {
-		 * this.malloryKeyPair = malloryKeyPair; } public PublicKey
-		 * getBobPublicKey() { return this.bobPublicKey; } public void
-		 * setBobPublicKey(PublicKey bobPublicKey) { this.bobPublicKey =
-		 * bobPublicKey; } }
-		 */
 
 	private static class TripleDesEncrypter {
 
