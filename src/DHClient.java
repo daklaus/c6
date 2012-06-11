@@ -1,31 +1,3 @@
-/*
- * Inetsec 1 2012 Challenge6
- * DH key exchange and encryption
- * 
- * 		http://en.wikipedia.org/wiki/Diffie_Hellman
- * 
- * 		First, the communication parterns agree on a prime number P, a base
- * 		(primitive root) G as well as on the bit size of the (secret) random
- * 		exponent L. 
- * 
- * 		After that, both partners can choose a secret random number (private key)
- * 		with the given bitsize and calculate the "public key":
- * 
- * 		public_key = (G ^ private_key) mod P
- * 
- * 		Using the public key of the other parter, each one can calculate the
- * 		shared secret key:
- * 
- * 		shared_secret = (partner_public_key ^ private_key) mod P 
- *
- * 
- * Client usage:	client <host> <port> <source account number> <destination
- * account number> <amount>
- * 
- * Courtesy of your friendly neighbourhood WDE assitant.
- * Just remember: We Don't Exist!
- */
-
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.math.BigInteger;
@@ -48,13 +20,13 @@ import sun.misc.BASE64Encoder;
 public class DHClient {
 	private static void usage() {
 		System.err
-				.println("Usage: java SampleClient <host> <port> <source account number> <destination account number> <amount>");
+				.println("Usage: java DHClient <host> <port> <source account number> <destination account number> <amount>");
 		System.exit(1);
 	}
 
 	public static void main(String args[]) {
 		int serverPort;
-		String hostname;
+		String server;
 		long sourceAccountNumber;
 		long destAccountNumber;
 		int amount;
@@ -62,18 +34,19 @@ public class DHClient {
 		if (args.length != 5)
 			usage();
 
-		hostname = args[0];
+		server = args[0];
 		serverPort = Integer.parseInt(args[1]);
 		sourceAccountNumber = Long.parseLong(args[2]);
 		destAccountNumber = Long.parseLong(args[3]);
 		amount = Integer.parseInt(args[4]);
 
-		client(hostname, serverPort, sourceAccountNumber, destAccountNumber,
-				amount);
+		client(server, serverPort, "inetsec046", "0926457",
+				sourceAccountNumber, destAccountNumber, amount);
 	}
 
-	private static void client(String hostname, int serverPort,
-			long sourceAccountNumber, long destAccountNumber, int amount) {
+	private static void client(String server, int serverPort, String user,
+			String pw, long sourceAccountNumber, long destAccountNumber,
+			int amount) {
 		Socket s = null;
 		String reply;
 		BASE64Decoder base64Dec = new BASE64Decoder();
@@ -81,7 +54,7 @@ public class DHClient {
 
 		try {
 			try {
-				s = new Socket(hostname, serverPort);
+				s = new Socket(server, serverPort);
 				DataInputStream in = new DataInputStream(s.getInputStream());
 				DataOutputStream out = new DataOutputStream(s.getOutputStream());
 
@@ -94,7 +67,7 @@ public class DHClient {
 
 				// reply with your inetsec credentials and immatriculation
 				// number
-				out.writeUTF("EHLO <inetsec046,0926457>");
+				out.writeUTF("EHLO <" + user + "," + pw + ">");
 
 				// check if the server replied with "OK"
 				reply = in.readUTF();
@@ -161,8 +134,8 @@ public class DHClient {
 				System.out.println("plaintext message: \n" + message + "\n");
 
 				// encrypt message with shared secret
-				TripleDesEncrypter des = new TripleDesEncrypter(secretKey);
-				String encMsg = des.encrypt(message);
+				TripleDesEncrypter tripleDes = new TripleDesEncrypter(secretKey);
+				String encMsg = tripleDes.encrypt(message);
 
 				// send encrypted message
 				out.writeUTF(encMsg);
@@ -183,6 +156,7 @@ public class DHClient {
 		} catch (Exception e) {
 			// handle exceptions
 			e.printStackTrace();
+			System.exit(1);
 		}
 	}
 }
